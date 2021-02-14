@@ -1,0 +1,27 @@
+version: "2"
+services:
+  mariadb:
+    image: wodby/mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: drupal8
+      MYSQL_USER: drupal8
+      MYSQL_PASSWORD: drupal8
+  php:
+    image: wodby/drupal-php:7.4
+    depends_on:
+      - mariadb
+    volumes:
+      - ./:/var/www/html
+  ngnix:
+    image: wodby/drupal-nginx
+    depends_on:
+      - php
+    ports:
+      - 8080:80
+    environment:
+      NGINX_STATIC_CONTENT_OPEN_FILE_CACHE: "off"
+      NGINX_BACKEND_HOST: php
+      NGINX_SERVER_ROOT: /var/www/html/docroot
+    volumes:
+      - ./:/var/www/html
